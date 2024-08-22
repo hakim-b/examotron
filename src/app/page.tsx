@@ -11,7 +11,7 @@ import Navbar from "~/components/navbar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 
 export default async function Home() {
-  const directoryPath = path.join(process.cwd(), "examotron_backup");
+  const directoryPath = path.join(process.cwd(), "/public/examotron_backup");
   const subdirectories = fs
     .readdirSync(directoryPath, { withFileTypes: true })
     .filter((dirent) => dirent.isDirectory())
@@ -31,6 +31,7 @@ export default async function Home() {
           id: itemId,
           isSelectable: true,
           name: item.name,
+          path: itemPath,
           children,
         });
       } else {
@@ -38,6 +39,7 @@ export default async function Home() {
           id: itemId,
           isSelectable: true,
           name: item.name,
+          path: itemPath,
         });
       }
     });
@@ -45,16 +47,22 @@ export default async function Home() {
     return elements;
   };
 
-  const renderTreeElements = (elements: TreeViewElement[]) => {
+  const renderTreeElements = (
+    elements: TreeViewElement[],
+    basePath: string,
+  ) => {
     return elements.map((element) =>
       element.children && element.children.length > 0 ? (
         <Folder key={element.id} element={element.name} value={element.id}>
-          {renderTreeElements(element.children)}
+          {renderTreeElements(
+            element.children,
+            path.join(basePath, element.name),
+          )}
         </Folder>
       ) : (
         <File key={element.id} value={element.id}>
           <Link
-            href={element.name}
+            href={`/examotron_backup/${basePath}/${element.name}`}
             download
             rel="noopener noreferrer"
             target="_blank"
@@ -87,7 +95,7 @@ export default async function Home() {
                   initialExpandedItems={["1"]}
                   elements={elements}
                 >
-                  {renderTreeElements(elements)}
+                  {renderTreeElements(elements, subdir)}
                 </Tree>
               </div>
             </TabsContent>
