@@ -1,4 +1,3 @@
-import CommandPalette from "./command-palette";
 import AnimatedShinyText from "./magicui/animated-shiny-text";
 import { ModeToggle } from "./mode-toggle";
 
@@ -13,9 +12,6 @@ function Navbar() {
             </AnimatedShinyText>
           </div>
 
-          <div className="flex items-center gap-2">
-            <CommandPalette />
-          </div>
           <div className="flex items-center justify-center gap-4">
             <ModeToggle />
           </div>
