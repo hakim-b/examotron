@@ -1,7 +1,16 @@
+"use client";
+
+import { UserButton, useUser } from "@clerk/nextjs";
 import AnimatedShinyText from "./magicui/animated-shiny-text";
 import { ModeToggle } from "./mode-toggle";
+import AIChatButton from "./ai-chat-button";
+import { Button } from "./ui/button";
+import { useRouter } from "next/navigation";
 
 function Navbar() {
+  const { isSignedIn } = useUser();
+  const router = useRouter();
+
   return (
     <>
       <div className="mb-6 p-4 shadow-md dark:border">
@@ -14,6 +23,15 @@ function Navbar() {
 
           <div className="flex items-center justify-center gap-4">
             <ModeToggle />
+            {isSignedIn ? (
+              <>
+                <UserButton /> <AIChatButton />
+              </>
+            ) : (
+              <Button onClick={() => router.push("/sign-in")}>
+                Sign in to use the chat bot
+              </Button>
+            )}
           </div>
         </div>
       </div>
