@@ -114,7 +114,7 @@ function ExamoFiles() {
   return (
     <>
       <Tabs defaultValue="biol" className="mt-5 w-full">
-        <TabsList className="grid w-full grid-cols-11">
+        <TabsList className="grid w-full grid-cols-5 md:grid-cols-11 h-28 md:h-10">
           {subjectFolders.map((subjFolder, index) => (
             <TabsTrigger value={subjFolder.toLowerCase()} key={index}>
               {subjFolder}
@@ -122,7 +122,7 @@ function ExamoFiles() {
           ))}
         </TabsList>
         {subjectFolders.map((subjFolder, index) => (
-          <TabsContent value={subjFolder.toLowerCase()} key={index}>
+          <TabsContent value={subjFolder.toLowerCase()} key={index} className="mt-8 md:mt-2">
             <div className="relative flex h-[300px] w-full flex-col items-center justify-center overflow-hidden rounded-lg border bg-background md:shadow-xl">
               <Tree
                 className="overflow-hidden rounded-md bg-background p-2"
