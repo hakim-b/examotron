@@ -10,13 +10,21 @@ export const metadata: Metadata = {
   title: "Examotron",
   description: "Concordia University Exam bank",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
+  keywords: ["examotron", "Concordia exam bank"],
+  openGraph: {
+    images: {
+      url:
+        "http://localhost:3000/api/og" ||
+        "https://examotron-aaeab.web.app/api/og",
+    },
+  },
 };
 
-type LayoutProps = {
+type RootLayoutProps = {
   children: ReactNode;
 };
 
-export default function RootLayout({ children }: LayoutProps) {
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" suppressHydrationWarning>
       <ThemeProvider
