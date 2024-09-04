@@ -19,7 +19,6 @@ type TreeViewElement = {
   id: string;
   name: string;
   isSelectable?: boolean;
-  path?: string;
   children?: TreeViewElement[];
 };
 
