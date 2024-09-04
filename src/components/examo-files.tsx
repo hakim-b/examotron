@@ -10,6 +10,7 @@ import {
   StorageReference,
 } from "firebase/storage";
 import { Tree, Folder, File, TreeViewElement } from "./magicui/file-tree";
+import Link from "next/link";
 
 function ExamoFiles() {
   const [subjectFolders, setSubjectFolders] = useState<string[]>([]);
@@ -125,9 +126,6 @@ function ExamoFiles() {
             <div className="relative flex h-[300px] w-full flex-col items-center justify-center overflow-hidden rounded-lg border bg-background md:shadow-xl">
               <Tree
                 className="overflow-hidden rounded-md bg-background p-2"
-                initialExpandedItems={fileTrees[subjFolder]?.map(
-                  (item) => item.id,
-                )}
                 elements={fileTrees[subjFolder] || []}
               >
                 {fileTrees[subjFolder]?.map((item) =>
@@ -142,20 +140,41 @@ function ExamoFiles() {
                           >
                             {child.children.map((subChild) => (
                               <File key={subChild.id} value={subChild.id}>
-                                <p>{subChild.name}</p>
+                                <Link
+                                  href={subChild.url!}
+                                  download
+                                  rel="noopener noreferrer"
+                                  target="_blank"
+                                >
+                                  {subChild.name}
+                                </Link>
                               </File>
                             ))}
                           </Folder>
                         ) : (
                           <File key={child.id} value={child.id}>
-                            <p>{child.name}</p>
+                            <Link
+                              href={child.url!}
+                              download
+                              rel="noopener noreferrer"
+                              target="_blank"
+                            >
+                              {child.name}
+                            </Link>
                           </File>
                         ),
                       )}
                     </Folder>
                   ) : (
                     <File key={item.id} value={item.id}>
-                      <p>{item.name}</p>
+                      <Link
+                        href={item.url!}
+                        download
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        {item.name}
+                      </Link>
                     </File>
                   ),
                 )}

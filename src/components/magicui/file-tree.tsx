@@ -20,6 +20,7 @@ type TreeViewElement = {
   name: string;
   isSelectable?: boolean;
   children?: TreeViewElement[];
+  url?: string;
 };
 
 type TreeContextProps = {
