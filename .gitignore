@@ -42,3 +42,4 @@ next-env.d.ts
 
 # FB
 /.firebase
+service-credentials.json
