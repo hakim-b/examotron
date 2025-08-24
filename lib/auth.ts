@@ -5,7 +5,10 @@ import { FirestoreAdapter } from "@auth/firebase-adapter";
 import NextAuth from "next-auth";
 import { firestore } from "./firestore";
 import { auth as fbAuth } from "./firebase";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+} from "firebase/auth";
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
   adapter: FirestoreAdapter(firestore),
@@ -28,25 +31,56 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         password: { type: "password" },
       },
 
-      async authorize(credentials): Promise<any> {
-        return await signInWithEmailAndPassword(
-          fbAuth,
-          credentials.email as string,
-          credentials.password as string
-        )
-          .then((userCredential) => {
-            if (userCredential.user) {
-              return userCredential.user;
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          return null;
+        }
+
+        try {
+          // Try to create a new user first
+          const userCredential = await createUserWithEmailAndPassword(
+            fbAuth,
+            credentials.email as string,
+            credentials.password as string
+          );
+
+          if (userCredential.user) {
+            return {
+              id: userCredential.user.uid,
+              email: userCredential.user.email,
+              emailVerified: userCredential.user.emailVerified,
+              name: userCredential.user.displayName,
+              image: userCredential.user.photoURL,
+            };
+          }
+          return null;
+        } catch (error: any) {
+          // If user already exists, try to sign in
+          if (error.code === "auth/email-already-in-use") {
+            try {
+              const signInResult = await signInWithEmailAndPassword(
+                fbAuth,
+                credentials.email as string,
+                credentials.password as string
+              );
+
+              if (signInResult.user) {
+                return {
+                  id: signInResult.user.uid,
+                  email: signInResult.user.email,
+                  emailVerified: signInResult.user.emailVerified,
+                  name: signInResult.user.displayName,
+                  image: signInResult.user.photoURL,
+                };
+              }
+            } catch (signInError) {
+              console.error("Error signing in:", signInError);
+              return null;
             }
-
-            return null;
-          })
-          .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-
-            console.error(`Error ${errorCode}: ${errorMessage}`);
-          });
+          }
+          console.error("Error creating user:", error);
+          return null;
+        }
       },
     }),
   ],

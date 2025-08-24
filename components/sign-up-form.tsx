@@ -14,12 +14,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Separator } from "./ui/separator";
 import { signIn } from "next-auth/react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { Icon } from "@iconify/react";
+import { useRouter } from "next/navigation";
+
 const formSchema = z.object({
   email: z.string().min(1, "Email is required").email("Invalid email"),
   password: z
@@ -31,8 +32,6 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 const SignUpForm = () => {
-  const router = useRouter();
-
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -41,10 +40,22 @@ const SignUpForm = () => {
     },
   });
 
+  const router = useRouter();
+
   const onSubmit = async (values: FormValues) => {
     try {
-      await createUserWithEmailAndPassword(auth, values.email, values.password);
-      router.push("/sign-in");
+      const result = await signIn("credentials", {
+        email: values.email,
+        password: values.password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        console.error(result.error);
+        return;
+      }
+
+      router.push("/");
     } catch (error: any) {
       console.error(error);
     }
@@ -91,9 +102,9 @@ const SignUpForm = () => {
       </form>
       <br />
       <div className="flex items-center justify-center gap-2">
-        <Separator className="w-36" orientation="horizontal" />
+        <Separator className="flex-1" orientation="horizontal" />
         <span className="text-medium">OR</span>
-        <Separator className="w-36" orientation="horizontal" />
+        <Separator className="flex-1" orientation="horizontal" />
       </div>
       <br />
       <Button

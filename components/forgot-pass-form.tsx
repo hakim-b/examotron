@@ -5,6 +5,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "@/lib/firebase";
+import { useState } from "react";
 
 import {
   Form,
@@ -24,6 +25,10 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 const ForgotPassForm = () => {
+  const [error, setError] = useState<string>("");
+  const [success, setSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -33,9 +38,19 @@ const ForgotPassForm = () => {
 
   const onSubmit = async (values: FormValues) => {
     try {
+      setError("");
+      setSuccess(false);
+      setIsLoading(true);
       await sendPasswordResetEmail(auth, values.email);
+      setSuccess(true);
+      form.reset();
     } catch (error: any) {
       console.error(error);
+      setError(
+        error.message || "Failed to send reset email. Please try again."
+      );
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -55,12 +70,19 @@ const ForgotPassForm = () => {
             </FormItem>
           )}
         />
+        {error && <p className="text-sm text-red-500">{error}</p>}
+        {success && (
+          <p className="text-sm text-green-500">
+            If an account exists with this email, you will receive a password
+            reset link shortly. Please check your inbox and spam folder.
+          </p>
+        )}
         <Button
           type="submit"
           className="w-full"
-          disabled={!form.watch("email")}
+          disabled={!form.watch("email") || isLoading}
         >
-          Send Reset Email
+          {isLoading ? "Sending..." : "Send Reset Email"}
         </Button>
       </form>
     </Form>

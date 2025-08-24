@@ -51,7 +51,7 @@ const SignInForm = () => {
       console.error(signInData.error);
     } else {
       router.refresh();
-      router.push("/notes/");
+      router.push("/");
     }
   };
 
@@ -104,13 +104,13 @@ const SignInForm = () => {
           Sign in
         </Button>
       </form>
-
-      <div className="my-6 flex items-center justify-center gap-2">
-        <Separator className="w-36" orientation="horizontal" />
+      <br />
+      <div className="flex items-center justify-center gap-2">
+        <Separator className="flex-1" orientation="horizontal" />
         <span className="text-medium">OR</span>
-        <Separator className="w-36" orientation="horizontal" />
+        <Separator className="flex-1" orientation="horizontal" />
       </div>
-
+      <br />
       <Button
         onClick={() =>
           signIn("google", { callbackUrl: window.location.origin })
